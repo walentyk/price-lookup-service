@@ -9,7 +9,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 
 | Step | Title | Estimate | Status | Commit |
 |---|---|---|---|---|
-| 0 | Planning docs and AGENTS.md (author commits manually) | - | AUTHOR | |
+| 0 | Planning docs and AGENTS.md (author commits manually) | - | DONE | e827a2e |
 | 1 | Architecture document with Mermaid diagrams | 40 min | DONE | d27c4f8 |
 | 2 | Solution skeleton, health, ProblemDetails baseline | 40 min | TODO | |
 | 3 | Domain: `Sku`, `CurrencyCode`, `Price`, `ProductPrice` | 30 min | TODO | |
@@ -312,7 +312,7 @@ The author reviews the documents (all decisions are recorded in [assumptions.md]
 - [ ] Diagrams "Local run" (API + stub) and "Deployment" (App Service, Key Vault, SAP; the stub is not deployed).
 - [ ] Testing strategy table (level, what, double).
 - [ ] "Not included, next steps" list.
-- [ ] Every diagram renders. Check each Mermaid block with `npx @mermaid-js/mermaid-cli@10.8.0 -i <file.mmd> -o <file.svg>`. The version is pinned because the author's machine has Node 14 and npx 6: the latest mermaid-cli needs a newer Node, and npx 6 has no `-y` flag. If the command still fails, preview the file on GitHub or in the editor; say which in the report.
+- [ ] Every diagram renders. Check each Mermaid block with `npx -y @mermaid-js/mermaid-cli -i <file.mmd> -o <file.svg>` (needs Node 18 or newer). If the command fails, preview the file on GitHub or in the editor; say which in the report.
 
 **Out of scope:** any code, project files.
 
@@ -640,7 +640,7 @@ taskkill //F //IM PriceLookup.Api.exe
 - [ ] React client component snippet: SKU input, submit, states `idle | loading | success | error`, button disabled while loading, `AbortController` to cancel a previous request, price formatted with `Intl.NumberFormat` and `currency`, `lastUpdated` with `Intl.DateTimeFormat`, `aria-live` for the result.
 - [ ] Error mapping table: every `code` from A20 plus the two `bff_*` codes, HTTP status, UI message, whether a "Try again" button is shown (yes for `502`, `503`, `504`; no for `400`, `404`).
 - [ ] Notes: no retries in the BFF (the service retries up to 3 times), the BFF is the only public entry point, client-side validation is a UX hint and the service stays the authority.
-- [ ] Mermaid diagram validated with `npx @mermaid-js/mermaid-cli@10.8.0 -i <file.mmd> -o <file.svg>` (pinned for Node 14 and npx 6, which has no `-y` flag; see step 1).
+- [ ] Mermaid diagram validated (same method as step 1).
 
 **Definition of Done:** R9, R10, R11 are each clearly answered; snippets are consistent with the real API (route, field names, codes); links from `architecture.md` and `requirements.md` work.
 
