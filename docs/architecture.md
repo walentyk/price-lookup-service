@@ -132,18 +132,18 @@ classDiagram
     class Sku {
         <<record>>
         +string Value
-        +TryParse(string? raw, out Sku sku) bool
+        +TryParse(string? raw, out Sku? sku) bool
     }
     class Price {
         <<record>>
         +decimal Amount
         +CurrencyCode Currency
-        +TryCreate(decimal amount, CurrencyCode currency, out Price price) bool
+        +TryCreate(decimal amount, CurrencyCode currency, out Price? price) bool
     }
     class CurrencyCode {
         <<record>>
         +string Value
-        +TryParse(string? raw, out CurrencyCode code) bool
+        +TryParse(string? raw, out CurrencyCode? code) bool
     }
 
     GetProductPriceHandler --> IErpClient : calls

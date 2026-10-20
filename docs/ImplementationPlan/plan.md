@@ -365,9 +365,9 @@ taskkill //F //IM PriceLookup.Api.exe    # cleanup on Windows
 **Goal:** the ubiquitous language as small immutable types with their invariants. Namespace `PriceLookup.Core.Domain`. No dependencies at all (not even `Microsoft.Extensions.*`).
 
 **Checklist**
-- [ ] `Sku` (`sealed record`, private constructor so an invalid value cannot exist): `Value`; `static bool TryParse(string? raw, out Sku sku)`: trim, `ToUpperInvariant`, `[GeneratedRegex]` `^[A-Z0-9][A-Z0-9._-]{0,39}$` (A11); `ToString()` returns `Value`.
-- [ ] `CurrencyCode` (`sealed record`, private constructor): `TryParse(string? raw, out CurrencyCode code)`: trim, upper-case, exactly three letters `A` to `Z`.
-- [ ] `Price` (`sealed record`): `Amount` (`decimal`, not negative) and `CurrencyCode Currency`; creation through `TryCreate(decimal amount, CurrencyCode currency, out Price price)`.
+- [ ] `Sku` (`sealed record`, private constructor so an invalid value cannot exist): `Value`; `static bool TryParse(string? raw, [NotNullWhen(true)] out Sku? sku)`: trim, `ToUpperInvariant`, `[GeneratedRegex]` `^[A-Z0-9][A-Z0-9._-]{0,39}$` (A11); `ToString()` returns `Value`.
+- [ ] `CurrencyCode` (`sealed record`, private constructor): `TryParse(string? raw, [NotNullWhen(true)] out CurrencyCode? code)`: trim, upper-case, exactly three letters `A` to `Z`.
+- [ ] `Price` (`sealed record`): `Amount` (`decimal`, not negative) and `CurrencyCode Currency`; creation through `TryCreate(decimal amount, CurrencyCode currency, [NotNullWhen(true)] out Price? price)`.
 - [ ] `ProductPrice` (`sealed record ProductPrice(Sku Sku, Price Price, DateTimeOffset LastUpdated)`): the read model returned by the ERP port.
 - [ ] Tests in `tests/PriceLookup.Tests/Domain`:
   - `SkuTests`: valid (`ABC-123`, `  abc-123  `, `A`, 40 characters, `A.B_C-1`), invalid (`null`, empty, whitespace, 41 characters, `-ABC`, `AB C`, `AB/C`, `ÄBC`, `ABC'1`); normalisation (`abc-123` equals `ABC-123`).
