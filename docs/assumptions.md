@@ -132,7 +132,7 @@ Examples with the default settings:
 | A21 | Author | **Locally** the settings live in `appsettings.json` (and `appsettings.Development.json`). **In Azure** they live in **Key Vault**. |
 | A22 | Proposed | Key Vault is loaded at startup by the configuration provider (`AddAzureKeyVault`) with the App Service **managed identity** (`DefaultAzureCredential`). The only App Service app setting is `KeyVault__Uri` (config key `KeyVault:Uri`); the provider is skipped when it is empty. Secret names use `--` as the section separator (`Erp--RetryCount` = `Erp:RetryCount`). Key Vault values override `appsettings.json`. A change needs a restart. The repository is public: `appsettings.json` holds defaults and placeholders only, never secrets. |
 | A23 | Proposed | The client certificate is stored in Key Vault as a **base64-encoded PFX** (`Sap--ClientCertificateBase64`, optional `Sap--ClientCertificatePassword`) and loaded once at startup with `X509CertificateLoader.LoadPkcs12`. Rotation = a new secret version + restart. |
-| A24 | Proposed | All options are **validated at startup** (`ValidateOnStart`). The service refuses to start with invalid settings. Ranges: `TotalTimeoutMs` 1 to 60000, `AttemptTimeoutMs` 1 to 60000 and not above `TotalTimeoutMs`, `RetryCount` 0 to 10, `RetryDelayMs` 0 to 10000. SAP rules: A8. |
+| A24 | Proposed | All options are **validated at startup** (`ValidateOnStart`). The service refuses to start with invalid settings. Ranges: `TotalTimeoutMs` 1 to 60000, `AttemptTimeoutMs` 1 to 60000 and not above `TotalTimeoutMs`, `RetryCount` 0 to 10, `RetryDelayMs` 0 to 10000. SAP rules: A8 for the scheme and the certificate; besides, `Sap:BaseUrl` has only scheme, host and optional port (no path, query or fragment; the path belongs in `Sap:ServicePath`), `Sap:ServicePath` starts and ends with `/`, and `Sap:SapClient` is three digits. The URL settings are checked rather than normalised: a wrong path makes SAP answer `404`, which would report every lookup as `sku_not_found`. |
 
 ## Architecture and code style
 
@@ -206,3 +206,4 @@ There are no open decisions left. If something needs to change, say so and the a
 - SAP response time SLA, which decides the real timeout and retry values.
 - How stale a price may be, which decides whether and how long to cache.
 - How a private SAP CA would be trusted, if the SAP server certificate is not issued by a public CA (A41).
+- SAP answers `404` both for an unknown SKU and for an unknown service (A24 only guards the shape of the URL settings). A real project would tell them apart by the SAP error code in the body, or check the service's `$metadata` at startup.

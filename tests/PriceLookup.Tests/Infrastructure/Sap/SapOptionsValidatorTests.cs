@@ -101,6 +101,43 @@ public sealed class SapOptionsValidatorTests
         Assert.Equal("Sap:ServicePath must not be empty.", AssertSingleFailure(Environments.Production, options));
     }
 
+    [Theory]
+    [InlineData("sap/opu/odata/sap/ZSD_PRODUCT_PRICE_SRV/")]
+    [InlineData("/sap/opu/odata/sap/ZSD_PRODUCT_PRICE_SRV")]
+    public void Service_path_without_leading_or_trailing_slash_fails(string servicePath)
+    {
+        var options = ProductionReadyOptions();
+        options.ServicePath = servicePath;
+
+        Assert.Equal("Sap:ServicePath must start and end with \"/\".", AssertSingleFailure(Environments.Production, options));
+    }
+
+    [Theory]
+    [InlineData("https://sap.example.invalid/sap")]
+    [InlineData("https://sap.example.invalid/sap/opu/odata/")]
+    [InlineData("https://sap.example.invalid?sap-client=100")]
+    [InlineData("https://sap.example.invalid/#top")]
+    public void Base_url_with_path_query_or_fragment_fails(string baseUrl)
+    {
+        var options = ProductionReadyOptions();
+        options.BaseUrl = baseUrl;
+
+        Assert.Equal(
+            "Sap:BaseUrl must have no path, query or fragment (only scheme, host and port); the path belongs in Sap:ServicePath.",
+            AssertSingleFailure(Environments.Production, options));
+    }
+
+    [Theory]
+    [InlineData("https://sap.example.invalid/")]
+    [InlineData("https://sap.example.invalid:44300")]
+    public void Base_url_with_only_scheme_host_and_port_passes(string baseUrl)
+    {
+        var options = ProductionReadyOptions();
+        options.BaseUrl = baseUrl;
+
+        Assert.True(Validate(Environments.Production, options).Succeeded);
+    }
+
     private static SapOptions ProductionReadyOptions() => new()
     {
         BaseUrl = "https://sap.example.invalid",

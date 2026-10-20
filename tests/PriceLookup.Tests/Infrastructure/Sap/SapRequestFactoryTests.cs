@@ -20,6 +20,16 @@ public sealed class SapRequestFactoryTests
     }
 
     [Fact]
+    public void Default_options_build_exactly_the_contract_path_and_query()
+    {
+        using var request = new SapRequestFactory(new SapOptions()).Create(AbcSku);
+
+        Assert.Equal(
+            "/sap/opu/odata/sap/ZSD_PRODUCT_PRICE_SRV/ProductPriceSet('ABC-123')?sap-client=100&$format=json",
+            request.RequestUri?.ToString());
+    }
+
+    [Fact]
     public void Request_accepts_json()
     {
         using var request = new SapRequestFactory(new SapOptions()).Create(AbcSku);

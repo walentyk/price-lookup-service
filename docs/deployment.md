@@ -179,6 +179,8 @@ If the app does not start:
 | `Sap:ClientCertificateBase64 is required outside Development.` | `KeyVault__Uri` is not set, or the secret is missing | Check step 6 and the secret name (two hyphens) |
 | `Azure.RequestFailedException` with `403` / `Forbidden` | The managed identity has no `Key Vault Secrets User` role, or it has not applied yet | Check step 4, wait a few minutes, `az webapp restart` |
 | `Sap:BaseUrl must use https (http is allowed only in Development).` | `Sap--BaseUrl` is `http` | Set an `https` URL |
+| `Sap:BaseUrl must have no path, query or fragment (only scheme, host and port); the path belongs in Sap:ServicePath.` | `Sap--BaseUrl` contains a path (for example `/sap/opu/odata/`), a query or a fragment | Set `Sap--BaseUrl` to `https://<sap-gateway-host>` (optionally with a port) and put the path in `Sap--ServicePath` |
+| `Sap:ServicePath must start and end with "/".` | `Sap--ServicePath` is missing the leading or the trailing slash | Set `Sap--ServicePath` to `/sap/opu/odata/sap/<SERVICE_NAME>_SRV/` |
 | `Sap:ClientCertificateBase64 could not be read as a PFX with Sap:ClientCertificatePassword (damaged data or wrong password).` | Wrong password, or the file was not base64 of the PFX | Set both secrets again |
 | `The certificate in Sap:ClientCertificateBase64 has no private key; ...` | The file is a `.cer` / `.crt`, not a PFX with the key | Export a PFX that includes the private key |
 

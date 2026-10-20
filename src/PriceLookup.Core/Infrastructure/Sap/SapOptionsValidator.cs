@@ -21,8 +21,17 @@ public sealed class SapOptionsValidator(IHostEnvironment environment) : IValidat
         return failures.Count == 0 ? ValidateOptionsResult.Success : ValidateOptionsResult.Fail(failures);
     }
 
-    private static string? ServicePathFailure(string servicePath) =>
-        string.IsNullOrWhiteSpace(servicePath) ? "Sap:ServicePath must not be empty." : null;
+    // SapRequestFactory appends "ProductPriceSet(...)" to the path as is. A missing slash builds a wrong URL,
+    // SAP answers 404 and every lookup would look like sku_not_found.
+    private static string? ServicePathFailure(string servicePath)
+    {
+        if (string.IsNullOrWhiteSpace(servicePath))
+        {
+            return "Sap:ServicePath must not be empty.";
+        }
+
+        return servicePath.StartsWith('/') && servicePath.EndsWith('/') ? null : "Sap:ServicePath must start and end with \"/\".";
+    }
 
     private static string? SapClientFailure(string sapClient) =>
         sapClient is { Length: 3 } && sapClient.All(char.IsAsciiDigit) ? null : "Sap:SapClient must be exactly three digits.";
@@ -34,9 +43,19 @@ public sealed class SapOptionsValidator(IHostEnvironment environment) : IValidat
             return "Sap:BaseUrl must be an absolute URL.";
         }
 
-        var allowed = uri.Scheme == Uri.UriSchemeHttps || (uri.Scheme == Uri.UriSchemeHttp && environment.IsDevelopment());
-        return allowed ? null : "Sap:BaseUrl must use https (http is allowed only in Development).";
+        if (!IsSchemeAllowed(uri))
+        {
+            return "Sap:BaseUrl must use https (http is allowed only in Development).";
+        }
+
+        // The rooted Sap:ServicePath replaces any path of the BaseAddress, so a path here would be dropped silently.
+        return uri is { AbsolutePath: "/", Query: "", Fragment: "" }
+            ? null
+            : "Sap:BaseUrl must have no path, query or fragment (only scheme, host and port); the path belongs in Sap:ServicePath.";
     }
+
+    private bool IsSchemeAllowed(Uri uri) =>
+        uri.Scheme == Uri.UriSchemeHttps || (uri.Scheme == Uri.UriSchemeHttp && environment.IsDevelopment());
 
     // A certificate that is configured must load in every environment, Development included.
     private string? CertificateFailure(SapOptions options)

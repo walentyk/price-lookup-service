@@ -297,8 +297,8 @@ Settings come from `appsettings.json` (and `appsettings.Development.json`) local
 | `Erp:AttemptTimeoutMs` | `3000` | 1 to 60000, not above `TotalTimeoutMs` | `appsettings.json` | small values via options or `UseSetting` | Key Vault `Erp--AttemptTimeoutMs` (optional) |
 | `Erp:RetryCount` | `3` | 0 to 10 | `appsettings.json` | options or `UseSetting` | Key Vault `Erp--RetryCount` (optional) |
 | `Erp:RetryDelayMs` | `200` | 0 to 10000 | `appsettings.json` | small values via options or `UseSetting` | Key Vault `Erp--RetryDelayMs` (optional) |
-| `Sap:BaseUrl` | `https://sap.example.invalid` (placeholder) | absolute; `https`, `http` only in `Development` (A8) | `appsettings.Development.json`: `http://localhost:5199` (the stub) | the in-process stub's address, or a stub `HttpMessageHandler` | Key Vault `Sap--BaseUrl` |
-| `Sap:ServicePath` | `/sap/opu/odata/sap/ZSD_PRODUCT_PRICE_SRV/` | not empty | `appsettings.json` | default | default, or Key Vault `Sap--ServicePath` |
+| `Sap:BaseUrl` | `https://sap.example.invalid` (placeholder) | absolute; `https`, `http` only in `Development` (A8); only scheme, host and port, no path, query or fragment (A24) | `appsettings.Development.json`: `http://localhost:5199` (the stub) | the in-process stub's address, or a stub `HttpMessageHandler` | Key Vault `Sap--BaseUrl` |
+| `Sap:ServicePath` | `/sap/opu/odata/sap/ZSD_PRODUCT_PRICE_SRV/` | starts and ends with `/` (A24) | `appsettings.json` | default | default, or Key Vault `Sap--ServicePath` |
 | `Sap:SapClient` | `100` | three digits | `appsettings.json` | default | default, or Key Vault `Sap--SapClient` |
 | `Sap:ClientCertificateBase64` | empty | required outside `Development`; must load and have a private key | empty (the stub ignores certificates) | a self-signed certificate created in the test | Key Vault `Sap--ClientCertificateBase64` (base64 PFX, A23) |
 | `Sap:ClientCertificatePassword` | empty | optional | empty | set by the test when needed | Key Vault `Sap--ClientCertificatePassword` |
