@@ -17,7 +17,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | 5 | Price endpoint with ProblemDetails mapping | 50 min | DONE | d54ab63 |
 | 6 | Resilience: attempt timeout, N retries and the total timeout | 75 min | DONE | f787ee6 |
 | 7 | SAP adapter: OData V2 client behind the port | 75 min | DONE | 89fce5c |
-| 8 | SAP stub app with magic SKUs and end-to-end tests | 60 min | TODO | |
+| 8 | SAP stub app with magic SKUs and end-to-end tests | 60 min | DONE | 77b2a22 |
 | 9 | X.509 certificate, TLS, options validation, Key Vault | 60 min | TODO | |
 | 10 | `docs/frontend-bff.md` (Next.js, written only) | 45 min | TODO | |
 | 11 | README and docs alignment | 30 min | TODO | |
