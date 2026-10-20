@@ -44,6 +44,7 @@ flowchart LR
 | A9 | Proposed | **SAP contract (hypothetical, to be agreed with the SAP team):** a custom OData **V2** service exposed through ICF / SAP Gateway, see [SAP contract](#sap-contract-a9). |
 | A10 | Proposed | **Price semantics:** SAP returns one current price per SKU with its currency and the last change timestamp. Pricing logic (sales organisation, customer, quantity, conditions) stays in SAP. We do not convert currencies. |
 | A11 | Proposed | **SKU = SAP material number.** The input is trimmed and upper-cased; the result must match `^[A-Z0-9][A-Z0-9._-]{0,39}$` (S/4HANA material numbers have up to 40 characters). The normalised value is used for the SAP call and in the response. SAP-side conversion (for example leading zeros) is SAP's job. |
+| A41 | Proposed | The **SAP server certificate** is validated with the platform's default rules. There is no option to skip validation and no custom `ServerCertificateCustomValidationCallback` (or `RemoteCertificateValidationCallback`). |
 
 ### SAP contract (A9)
 
@@ -204,3 +205,4 @@ There are no open decisions left. If something needs to change, say so and the a
 - Certificate-to-user mapping on the SAP side and who owns certificate rotation.
 - SAP response time SLA, which decides the real timeout and retry values.
 - How stale a price may be, which decides whether and how long to cache.
+- How a private SAP CA would be trusted, if the SAP server certificate is not issued by a public CA (A41).

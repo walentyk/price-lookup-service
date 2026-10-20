@@ -42,7 +42,10 @@ dotnet test PriceLookup.slnx
 dotnet run --project tests/PriceLookup.SapStub    # SAP stub on http://localhost:5199
 dotnet run --project src/PriceLookup.Api          # API on http://localhost:5080 (Development)
 curl -s -i http://localhost:5080/products/ABC-123/price
+npx @mermaid-js/mermaid-cli@10.8.0 -i <file.mmd> -o <file.svg>   # check that a Mermaid diagram renders
 ```
+
+The Mermaid CLI version is pinned on purpose: the author's machine has Node 14 and npx 6. The latest mermaid-cli needs a newer Node, and npx 6 has no `-y` flag.
 
 Long-running processes: start them as background tasks and stop them when the check is done.
 On Windows `dotnet run` can leave the app process alive; clean up with

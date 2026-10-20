@@ -114,18 +114,24 @@ flowchart TB
     api["PriceLookup.Api<br/>endpoints, ProblemDetails, configuration, composition root"]
 
     subgraph core["PriceLookup.Core"]
+        di["DependencyInjection<br/>AddCore(configuration)"]
         infra["Infrastructure<br/>SAP adapter"]
         app["Application<br/>port, use case, resilience decorators"]
         domain["Domain<br/>value objects, read model"]
     end
 
-    api --> core
+    api --> di
+    api --> app
+    api --> domain
+    di --> infra
+    di --> app
     infra --> app
     infra --> domain
     app --> domain
 ```
 
-- Arrows mean "may reference". Everything else is forbidden (for example Domain must not reference Application, Core must not reference Api).
+- Arrows mean "may reference". Everything else is forbidden (for example Domain must not reference Application, Core must not reference Api, Api must not reference Infrastructure).
+- `PriceLookup.Api` reaches the SAP adapter only through `AddCore`, which composes it.
 - `LayeringTests` (step 4) enforces this with `NetArchTest.Rules`.
 
 ## Lesson from the MVP branch: no god class
@@ -306,7 +312,7 @@ The author reviews the documents (all decisions are recorded in [assumptions.md]
 - [ ] Diagrams "Local run" (API + stub) and "Deployment" (App Service, Key Vault, SAP; the stub is not deployed).
 - [ ] Testing strategy table (level, what, double).
 - [ ] "Not included, next steps" list.
-- [ ] Every diagram renders. Check with `npx -y @mermaid-js/mermaid-cli -i <file.mmd> -o <file.svg>` if it works on this machine, otherwise preview the file on GitHub or in the editor; say which in the report.
+- [ ] Every diagram renders. Check each Mermaid block with `npx @mermaid-js/mermaid-cli@10.8.0 -i <file.mmd> -o <file.svg>`. The version is pinned because the author's machine has Node 14 and npx 6: the latest mermaid-cli needs a newer Node, and npx 6 has no `-y` flag. If the command still fails, preview the file on GitHub or in the editor; say which in the report.
 
 **Out of scope:** any code, project files.
 
@@ -402,7 +408,7 @@ dotnet test PriceLookup.slnx    # list the new tests in the report
   - `CallsFor(string sku)` and `TotalCalls`
   - scripted failures and hangs are consumed in the order they were added; an unknown SKU returns `null`
 - [ ] `Application/GetProductPriceHandlerTests`: found; lower-case input is normalised in the result; unknown SKU gives `SkuNotFound`; invalid SKU gives `InvalidSku` and `TotalCalls` = 0; each `ErpFailureKind` gives its `PriceLookupError` (theory); a cancelled token throws `OperationCanceledException` and is not mapped.
-- [ ] `Architecture/LayeringTests` with `NetArchTest.Rules`: Domain does not depend on Application, Infrastructure or Api; Application does not depend on Infrastructure or Api; Core does not depend on Api. If the package does not work on .NET 10, stop and ask.
+- [ ] `Architecture/LayeringTests` with `NetArchTest.Rules`: Domain does not depend on Application, Infrastructure or Api; Application does not depend on Infrastructure or Api; Core does not depend on Api; `PriceLookup.Api` does not depend on `PriceLookup.Core.Infrastructure`. If the package does not work on .NET 10, stop and ask.
 
 **Out of scope:** retries, timeouts, HTTP, SAP, the endpoint.
 
@@ -425,7 +431,7 @@ dotnet test PriceLookup.slnx
 **Checklist**
 - [ ] `Endpoints/PriceResponse.cs`: `sealed record PriceResponse(string Sku, decimal Price, string Currency, DateTimeOffset LastUpdated)`, camelCase JSON (default web options).
 - [ ] `Endpoints/PriceResponseMapper.cs`: `ProductPrice` to `PriceResponse`.
-- [ ] `Errors/PriceLookupProblemMapper.cs`: `PriceLookupError` to a `ProblemHttpResult` with status, `code` (from `ErrorCodes`), `title`, a short human `detail` with the SKU, `instance` and `traceId`. One table or one `switch` expression; no `if` ladders.
+- [ ] `Errors/PriceLookupProblemMapper.cs`: `PriceLookupError` to a `ProblemHttpResult` with status, `code` (from `ErrorCodes`), `title`, a short human `detail` with the SKU, `instance` and `traceId`. The titles are the ones in the Errors table of [architecture.md](../architecture.md#errors). One table or one `switch` expression; no `if` ladders.
   - `InvalidSku` 400 `invalid_sku`, `SkuNotFound` 404 `sku_not_found`, `ErpUnavailable` 502 `erp_unavailable`, `ErpAuthFailed` 502 `erp_auth_failed`, `ErpInvalidResponse` 502 `erp_invalid_response`, `ErpTimeout` 504 `erp_timeout`.
 - [ ] `Endpoints/PriceEndpoints.cs`: `MapPriceEndpoints()` extension; the handler delegates to `GetProductPriceHandler` and returns `Results<Ok<PriceResponse>, ProblemHttpResult>`; the request handler method is a few lines. OpenAPI metadata (`WithName`, `ProducesProblem` for 400, 404, 502, 504).
 - [ ] `Program.cs`: `AddCore(builder.Configuration)` and `MapPriceEndpoints()`.
@@ -599,6 +605,7 @@ Expected: `200`, `200`, `200`, `404 sku_not_found`, `400 invalid_sku`, `200`, `5
   - `ClientCertificateLoaderTests`: a self-signed certificate created in the test (`CertificateRequest`, exported as PKCS#12, base64) loads; garbage base64 fails; a certificate without a private key fails; the error message does not contain the password
   - `SapOptionsValidatorTests`: `http` `BaseUrl` fails in `Production` and passes in `Development`; a missing certificate fails in `Production` and passes in `Development`; a valid self-signed certificate passes in `Production`; bad `SapClient` fails; empty `ServicePath` fails
   - a test that the Key Vault provider is skipped when `KeyVault:Uri` is empty (assert on the configuration sources)
+  - `SapHttpHandlerFactoryTests`: `SslOptions.RemoteCertificateValidationCallback` is `null`, so the SAP server certificate is validated with the platform's default rules (A41)
 - [ ] Existing end-to-end tests still pass (they run in `Development`).
 
 **Out of scope:** real SAP or Key Vault calls, certificate rotation automation.
@@ -633,7 +640,7 @@ taskkill //F //IM PriceLookup.Api.exe
 - [ ] React client component snippet: SKU input, submit, states `idle | loading | success | error`, button disabled while loading, `AbortController` to cancel a previous request, price formatted with `Intl.NumberFormat` and `currency`, `lastUpdated` with `Intl.DateTimeFormat`, `aria-live` for the result.
 - [ ] Error mapping table: every `code` from A20 plus the two `bff_*` codes, HTTP status, UI message, whether a "Try again" button is shown (yes for `502`, `503`, `504`; no for `400`, `404`).
 - [ ] Notes: no retries in the BFF (the service retries up to 3 times), the BFF is the only public entry point, client-side validation is a UX hint and the service stays the authority.
-- [ ] Mermaid diagram validated (same method as step 1).
+- [ ] Mermaid diagram validated with `npx @mermaid-js/mermaid-cli@10.8.0 -i <file.mmd> -o <file.svg>` (pinned for Node 14 and npx 6, which has no `-y` flag; see step 1).
 
 **Definition of Done:** R9, R10, R11 are each clearly answered; snippets are consistent with the real API (route, field names, codes); links from `architecture.md` and `requirements.md` work.
 
@@ -689,7 +696,7 @@ dotnet build PriceLookup.slnx && dotnet test PriceLookup.slnx
 **Goal:** describe how the service gets to Azure App Service with Key Vault (A2, A22, A23). Ask the author before running anything against Azure.
 
 **Checklist**
-- [ ] `docs/deployment.md` with bash `az` CLI commands: resource group; Linux App Service plan; web app with the .NET 10 runtime; system-assigned managed identity; Key Vault (RBAC) and the `Key Vault Secrets User` role for the identity; secrets `Sap--BaseUrl`, `Sap--ClientCertificateBase64`, `Sap--ClientCertificatePassword`, `Erp--TotalTimeoutMs`, `Erp--AttemptTimeoutMs`, `Erp--RetryCount`, `Erp--RetryDelayMs`; app setting `KeyVault__Uri`; health check path `/health`; `dotnet publish src/PriceLookup.Api` + `az webapp deploy`. Only `src/PriceLookup.Api` is published; the stub is never deployed.
+- [ ] `docs/deployment.md` with bash `az` CLI commands: resource group; Linux App Service plan; web app with the .NET 10 runtime; system-assigned managed identity; Key Vault (RBAC) and the `Key Vault Secrets User` role for the identity; secrets `Sap--BaseUrl`, `Sap--ClientCertificateBase64`, `Sap--ClientCertificatePassword`, `Erp--TotalTimeoutMs`, `Erp--AttemptTimeoutMs`, `Erp--RetryCount`, `Erp--RetryDelayMs`, and the optional overrides `Sap--ServicePath` and `Sap--SapClient` (only when they differ from the defaults); app setting `KeyVault__Uri`; health check path `/health`; `dotnet publish src/PriceLookup.Api` + `az webapp deploy`. Only `src/PriceLookup.Api` is published; the stub is never deployed.
 - [ ] Certificate rotation: new secret version, restart.
 - [ ] Optional deploy job in the CI workflow (OIDC `azure/login`) only if the author asks for it.
 
