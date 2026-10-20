@@ -22,7 +22,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | 10 | `docs/frontend-bff.md` (Next.js, written only) | 45 min | DONE | bad6e55 |
 | 11 | README and docs alignment | 30 min | DONE | 61bbc17 |
 | 12 | Optional: CI (GitHub Actions build and test) | 20 min | TODO | |
-| 13 | Optional: Azure deployment notes | 45 min | TODO | |
+| 13 | Optional: Azure deployment notes | 45 min | DONE | a6d856b |
 | 14 | Pull request to `main` | 10 min | TODO | |
 
 Status values: `AUTHOR` (the author's own step, agents never take it), `TODO`, `DONE`. When a step is approved the agent sets `DONE` and writes the short hash of the step commit into the Commit column.
