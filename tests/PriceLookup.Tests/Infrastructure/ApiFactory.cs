@@ -9,14 +9,22 @@ using PriceLookup.Tests.Fakes;
 namespace PriceLookup.Tests.Infrastructure;
 
 // Without a fake of its own a test gets a fresh, empty ScriptedErpClient: every SKU is unknown.
+// End-to-end tests call UsingRealErpClient() to keep the production chain that AddCore registers.
 public sealed class ApiFactory(ScriptedErpClient? erp = null) : WebApplicationFactory<Program>
 {
     private readonly ScriptedErpClient erp = erp ?? new ScriptedErpClient();
     private readonly Dictionary<string, string?> settings = [];
+    private bool replaceErpClient = true;
 
     public ApiFactory WithSetting(string key, string? value)
     {
         settings[key] = value;
+        return this;
+    }
+
+    public ApiFactory UsingRealErpClient()
+    {
+        replaceErpClient = false;
         return this;
     }
 
@@ -27,7 +35,10 @@ public sealed class ApiFactory(ScriptedErpClient? erp = null) : WebApplicationFa
             builder.UseSetting(key, value);
         }
 
-        builder.ConfigureTestServices(ReplaceServices);
+        if (replaceErpClient)
+        {
+            builder.ConfigureTestServices(ReplaceServices);
+        }
     }
 
     private void ReplaceServices(IServiceCollection services)

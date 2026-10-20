@@ -4,6 +4,7 @@
     <Project Path="src/PriceLookup.Core/PriceLookup.Core.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/PriceLookup.SapStub/PriceLookup.SapStub.csproj" />
     <Project Path="tests/PriceLookup.Tests/PriceLookup.Tests.csproj" />
   </Folder>
 </Solution>

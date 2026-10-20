@@ -1,0 +1,33 @@
+# Start the SAP stub first: dotnet run --project tests/PriceLookup.SapStub
+# Magic SKUs and expected results: docs/assumptions.md, A35.
+@baseUrl = http://localhost:5080
+
+### 200, 19.99 EUR
+GET {{baseUrl}}/products/ABC-123/price
+
+### 200, 1250.00 PLN
+GET {{baseUrl}}/products/XYZ-999/price
+
+### 200, 5.00 EUR after 3 attempts
+GET {{baseUrl}}/products/FLAKY-1/price
+
+### 502 erp_unavailable after 4 attempts
+GET {{baseUrl}}/products/FAIL-1/price
+
+### 502 erp_auth_failed after 1 attempt
+GET {{baseUrl}}/products/AUTH-1/price
+
+### 502 erp_invalid_response after 1 attempt
+GET {{baseUrl}}/products/BROKEN-1/price
+
+### 200, 2.50 EUR after about 3.2 s (2 attempts, the first cut by the attempt timeout)
+GET {{baseUrl}}/products/HANG-1/price
+
+### 504 erp_timeout after about 7 s
+GET {{baseUrl}}/products/SLOW-1/price
+
+### 404 sku_not_found
+GET {{baseUrl}}/products/NOPE-1/price
+
+### 400 invalid_sku
+GET {{baseUrl}}/products/bad%20sku/price

@@ -241,6 +241,7 @@ Rules that follow from it:
     │   │                                        ODataDateParserTests, SapOptionsValidatorTests, ClientCertificateLoaderTests, SapHttpHandlerFactoryTests
     │   ├── Endpoints/PriceEndpointTests.cs
     │   ├── EndToEnd/StubScenarioTests.cs
+    │   ├── EndToEnd/SapStubFixture.cs           the stub on a free loopback port, one per test class
     │   ├── Fakes/ScriptedErpClient.cs
     │   ├── Fakes/StubHttpMessageHandler.cs
     │   ├── Infrastructure/ApiFactory.cs
@@ -248,7 +249,10 @@ Rules that follow from it:
     └── PriceLookup.SapStub/
         ├── Program.cs                           wiring only
         ├── SapStubHost.cs                       builds the app (usable from tests)
+        ├── ProductPriceEndpoint.cs              the OData route, parses ProductPriceSet('<sku>')
         ├── Scenarios/                           one small class per magic SKU behaviour
+        │   ├── ScenarioCatalog.cs               magic SKU to scenario, otherwise not found
+        │   └── StubCall.cs                      SKU and per-SKU call number
         ├── ODataPayloads.cs                     success and error bodies
         ├── CallLog.cs                           per-SKU call counter
         └── Properties/launchSettings.json

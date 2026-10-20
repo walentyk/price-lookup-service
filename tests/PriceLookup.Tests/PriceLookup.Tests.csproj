@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PriceLookup.Api\PriceLookup.Api.csproj" />
     <ProjectReference Include="..\..\src\PriceLookup.Core\PriceLookup.Core.csproj" />
+    <ProjectReference Include="..\PriceLookup.SapStub\PriceLookup.SapStub.csproj" />
   </ItemGroup>
 
   <ItemGroup>
