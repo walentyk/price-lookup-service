@@ -631,7 +631,8 @@ Expected: `200`, `200`, `200`, `404 sku_not_found`, `400 invalid_sku`, `200`, `5
 dotnet build PriceLookup.slnx
 dotnet test PriceLookup.slnx
 ASPNETCORE_ENVIRONMENT=Production dotnet run --project src/PriceLookup.Api --no-launch-profile
-# expected: refuses to start, validation error about the client certificate (and the https rule); no secret values in the message
+# expected: refuses to start with "Sap:ClientCertificateBase64 is required outside Development."; only the certificate
+# error appears, because the Sap:BaseUrl placeholder in appsettings.json is already https; no secret values in the message
 dotnet run --project src/PriceLookup.Api   # Development: starts normally
 taskkill //F //IM PriceLookup.Api.exe
 ```

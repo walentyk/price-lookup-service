@@ -285,7 +285,7 @@ Example (`GET /products/SLOW-1/price` against the stub):
 }
 ```
 
-`type` is filled in by the framework from the status code; `instance` is `"{METHOD} {path}"`; the exact `detail` wording is set in plan step 5.
+`type` is filled in by the framework from the status code; `instance` is `"{METHOD} {path}"`; `title` and `detail` come from `PriceLookupProblemMapper`, and `detail` names the SKU.
 
 ## Configuration
 
@@ -384,7 +384,7 @@ flowchart LR
 
 ## Testing strategy
 
-One test project, `tests/PriceLookup.Tests`, whose folders mirror the layers, plus the stub app (A36). xUnit v3 and `Assert`; no mocking library. Every test runs well under 1 s; timeouts in tests are a few milliseconds.
+One test project, `tests/PriceLookup.Tests`, whose folders mirror the layers, plus the stub app (A36). xUnit v3 and `Assert`; no mocking library. Every test runs well under 1 s; timeouts in tests are small millisecond values (tens to a few hundred) set through options or `UseSetting`.
 
 | Level | What | Double |
 |---|---|---|
@@ -394,7 +394,9 @@ One test project, `tests/PriceLookup.Tests`, whose folders mirror the layers, pl
 | Application unit | `AttemptTimeoutErpClientTests`, `RetryingErpClientTests`, `TimeoutErpClientTests`, the full chain (`ErpResilienceChainTests`), `ErpResilienceOptionsTests` | `ScriptedErpClient` (can return a price, fail N times, or hang) |
 | Infrastructure unit | `SapErpClientTests`, `SapResponseClassifierTests`, `SapRequestFactoryTests`, `ODataDateParserTests`, `SapHttpHandlerFactoryTests` | `StubHttpMessageHandler` |
 | Infrastructure unit | `ClientCertificateLoaderTests`, `SapOptionsValidatorTests` | a self-signed certificate created in the test |
+| Api configuration | `KeyVaultConfigurationExtensionsTests`: the Key Vault provider is skipped when `KeyVault:Uri` is empty | none |
 | Endpoint | `PriceEndpointTests`, `HealthAndErrorsTests`: status codes, JSON body, `ProblemDetails` with `code` and `traceId` | `WebApplicationFactory<Program>` with `ScriptedErpClient` |
+| Startup | `StartupValidationTests`: the whole host in `Production` refuses to start without a client certificate and starts with a valid one | `WebApplicationFactory<Program>`, a self-signed certificate created in the test |
 | End to end | `StubScenarioTests`: the real chain and `SapErpClient` against every magic SKU, with call counts | `PriceLookup.SapStub` hosted in-process on the loopback interface |
 | Manual | `curl` against the real API and stub processes | `PriceLookup.SapStub` |
 
