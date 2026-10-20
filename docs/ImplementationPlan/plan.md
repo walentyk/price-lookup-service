@@ -647,14 +647,14 @@ taskkill //F //IM PriceLookup.Api.exe
 
 ## Step 10 - `docs/frontend-bff.md` (written only)
 
-**Goal:** R9 to R11. A document, no code in the repo. The author has little frontend experience: snippets must be short (each under about 40 lines), commented and easy to explain in an interview. A38.
+**Goal:** R9 to R11. A document, no code in the repo. The author has little frontend experience: the document has exactly four snippets (the BFF, the Server Action alternative, the hook, the component), each self-contained, under about 50 lines, commented, introduced by two or three plain sentences, and easy to explain in an interview. A38.
 
 **Checklist**
 - [ ] Overview and a Mermaid sequence diagram: browser, React client component, BFF Route Handler, Price Lookup Service.
 - [ ] BFF Route Handler snippet (`app/api/products/[sku]/price/route.ts`, Next.js 15+ conventions, `params` is a Promise): server-only `PRICE_SERVICE_URL`; the same SKU rule as A11 for an early `400`; `fetch` with `AbortSignal.timeout(8000)` (longer than 7 s) and `cache: 'no-store'`; passes through the service's status and `ProblemDetails`; maps network errors to `503 bff_upstream_unavailable` and its own timeout to `504 bff_timeout`; never leaks the internal URL; forwards a correlation header (`traceparent`).
 - [ ] Server Action alternative: a short snippet returning `{ ok: true, data } | { ok: false, code, message }`, and when to choose it over the Route Handler.
 - [ ] React client component snippet: SKU input, submit, states `idle | loading | success | error`, button disabled while loading, `AbortController` to cancel a previous request, price formatted with `Intl.NumberFormat` and `currency`, `lastUpdated` with `Intl.DateTimeFormat`, `aria-live` for the result.
-- [ ] Error mapping table: every `code` from A20 plus the two `bff_*` codes, HTTP status, UI message, whether a "Try again" button is shown (yes for `502`, `503`, `504`; no for `400`, `404`).
+- [ ] Error mapping table: every `code` from A20 plus the two `bff_*` codes, HTTP status, UI message, whether a "Try again" button is shown: only where the service itself would retry (A14) or where the failure is about time or reachability (`erp_unavailable`, `erp_timeout`, `bff_upstream_unavailable`, `bff_timeout`, `internal_error`, `http_error` and the unknown fallback); hidden for `invalid_sku`, `sku_not_found`, `route_not_found`, `method_not_allowed`, `erp_auth_failed` and `erp_invalid_response`.
 - [ ] Notes: no retries in the BFF (the service retries up to 3 times), the BFF is the only public entry point, client-side validation is a UX hint and the service stays the authority.
 - [ ] Mermaid diagram validated (same method as step 1).
 
