@@ -400,7 +400,7 @@ dotnet test PriceLookup.slnx    # list the new tests in the report
 - [ ] `GetProductPrice/PriceLookupResult.cs`: `sealed record` with either a `ProductPrice` or a `PriceLookupError`; static `Found(...)` and `Failed(...)`; `IsSuccess`.
 - [ ] `GetProductPrice/ErpFailureMapper.cs`: maps `ErpFailureKind` to `PriceLookupError` (`Transient` to `ErpUnavailable`, `Unauthorized` to `ErpAuthFailed`, `InvalidResponse` to `ErpInvalidResponse`, `AttemptTimeout` and `Timeout` to `ErpTimeout`).
 - [ ] `GetProductPrice/GetProductPriceHandler.cs`: `Task<PriceLookupResult> HandleAsync(string? rawSku, CancellationToken cancellationToken)`. Parse with `Sku.TryParse` (invalid gives `InvalidSku` without calling the port); call `IErpClient`; `null` gives `SkuNotFound`; `ErpException` goes through `ErpFailureMapper`; `OperationCanceledException` is not caught. Logs the outcome with the SKU (Information on success and not found, Warning on failures). Split into small private methods.
-- [ ] `DependencyInjection/CoreServiceCollectionExtensions.cs`: `AddCore(this IServiceCollection, IConfiguration)` registering `GetProductPriceHandler` (scoped). Call it from `Program.cs`.
+- [ ] `DependencyInjection/CoreServiceCollectionExtensions.cs`: `AddCore(this IServiceCollection, IConfiguration)` registering `GetProductPriceHandler` (scoped). Do not call it from `Program.cs` yet: nothing registers `IErpClient` before step 7, so Development DI validation would fail at startup and break the existing endpoint tests. Step 5 adds the call together with the `IErpClient` replacement in `ApiFactory`.
 - [ ] `tests/.../Fakes/ScriptedErpClient.cs` (thread-safe, no mocking library):
   - `WithPrice(string sku, decimal amount, string currency, DateTimeOffset? lastUpdated = null)`
   - `FailsWith(string sku, ErpFailureKind kind, int times = int.MaxValue)`: the first `times` calls throw, later calls behave normally
@@ -436,6 +436,7 @@ dotnet test PriceLookup.slnx
 - [ ] `Endpoints/PriceEndpoints.cs`: `MapPriceEndpoints()` extension; the handler delegates to `GetProductPriceHandler` and returns `Results<Ok<PriceResponse>, ProblemHttpResult>`; the request handler method is a few lines. OpenAPI metadata (`WithName`, `ProducesProblem` for 400, 404, 502, 504).
 - [ ] `Program.cs`: `AddCore(builder.Configuration)` and `MapPriceEndpoints()`.
 - [ ] `Infrastructure/ApiFactory.cs`: a test passes its own `ScriptedErpClient`; the factory replaces `IErpClient` via `ConfigureTestServices` (`RemoveAll<IErpClient>()` + singleton). One factory per test.
+- [ ] `Infrastructure/ApiFactory.cs`: registers a fresh, empty `ScriptedErpClient` by default, so tests that do not pass their own fake (`HealthAndErrorsTests`) keep working once `Program.cs` calls `AddCore`.
 - [ ] `Endpoints/PriceEndpointTests`:
   - found SKU: `200`, body has `sku`, `price`, `currency`, `lastUpdated` with the fake's values
   - lower-case input finds the upper-case SKU, response `sku` is normalised
