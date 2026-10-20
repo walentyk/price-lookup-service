@@ -203,7 +203,7 @@ The full design with Mermaid diagrams (system context, layers, main types, reque
 ## Project layout
 
 ```text
-docs/                          requirements, assumptions, architecture, frontend and BFF, implementation plan
+docs/                          requirements, assumptions, architecture, frontend and BFF, deployment, implementation plan
 src/PriceLookup.Core/          no ASP.NET dependency
   Domain/                      Sku, CurrencyCode, Price, ProductPrice
   Application/Ports/           IErpClient, ErpException, ErpFailureKind
@@ -228,7 +228,7 @@ tests/PriceLookup.SapStub/     the SAP stub app (never deployed)
 - Automated certificate rotation.
 - The real SAP contract (service, entity set, fields, which price, `sap-client`) agreed with the SAP team, and timeout values from the SAP SLA.
 - Frontend code: the frontend and the BFF are described in [docs/frontend-bff.md](docs/frontend-bff.md), not built.
-- CI and the Azure deployment are optional steps 12 and 13 of the [plan](docs/ImplementationPlan/plan.md).
+- CI is optional step 12 of the [plan](docs/ImplementationPlan/plan.md). The Azure deployment is described in [docs/deployment.md](docs/deployment.md) but not automated.
 
 ## Documents
 
@@ -238,6 +238,7 @@ tests/PriceLookup.SapStub/     the SAP stub app (never deployed)
 | [docs/assumptions.md](docs/assumptions.md) | Everything the assessment does not say: assumptions and decisions `A1` to `A41`, the SAP contract, the magic SKUs |
 | [docs/architecture.md](docs/architecture.md) | The design: diagrams, error mapping, configuration, SAP client details, testing strategy |
 | [docs/frontend-bff.md](docs/frontend-bff.md) | The Next.js frontend and BFF (written only): Route Handler, Server Action alternative, React hook and component, error mapping |
+| [docs/deployment.md](docs/deployment.md) | Azure App Service and Key Vault with `az` CLI commands: resources, managed identity, secrets, deployment, certificate rotation |
 | [docs/ImplementationPlan/plan.md](docs/ImplementationPlan/plan.md) | The step-by-step plan the service was built with, and the progress tracker |
 | [AGENTS.md](AGENTS.md) | Rules for the coding agents that worked on this repository |
 | [IRCO - Technical Assessment.pdf](docs/InitialRequirements/IRCO%20-%20Technical%20Assessment.pdf) | The original assessment |

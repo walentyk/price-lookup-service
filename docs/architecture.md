@@ -380,7 +380,7 @@ flowchart LR
 ```
 
 - Only `src/PriceLookup.Api` is published. The stub and the tests are never deployed (A34).
-- The deployment itself is optional work (A39, plan step 13).
+- The `az` CLI commands for the resource group, the plan, the web app, the managed identity, Key Vault and its secrets, the deployment and certificate rotation are in [deployment.md](deployment.md) (optional work, A39, plan step 13).
 
 ## Testing strategy
 
@@ -411,4 +411,4 @@ X.509 against a real SAP system is not covered by automated tests; the unit test
 - Bulk lookups and currency conversion.
 - Automated certificate rotation.
 - The real SAP contract (service, entity set, fields, which price, `sap-client`) agreed with the SAP team, and real timeout values from the SAP SLA.
-- CI and the Azure deployment are optional plan steps 12 and 13 (A39).
+- CI is optional plan step 12 (A39). The Azure deployment is described in [deployment.md](deployment.md) but not automated.
