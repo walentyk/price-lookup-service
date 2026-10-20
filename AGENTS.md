@@ -67,6 +67,7 @@ On Windows `dotnet run` can leave the app process alive; clean up with
 
 - A method is up to about 15 lines. If it does two things, split it. Early returns instead of nesting; at most two levels of nesting.
 - A class is up to about 120 lines and has one reason to change. One public type per file; a small companion record or enum may share the file.
+- The class-size guide is for production code; a test class may be longer when every test in it is short.
 - Prefer at most three parameters. Use primary constructors for dependency injection and `sealed` classes by default.
 - Names come from the ubiquitous language: `Sku`, `Price`, `ProductPrice`, `Erp`, `Sap`. No `Helper`, `Manager`, `Util`, `Common`, and no `*Service` god classes.
 - **No god class.** The MVP branch had a `PriceService` with the cache, the retry loop, two cancellation sources, five `catch` blocks, status decisions and logging in one class; this rewrite must not. A cross-cutting policy (retry, timeout) is a decorator of `IErpClient`. The use case (`GetProductPriceHandler`) only parses, calls the port and maps the outcome: it never creates a `CancellationTokenSource`, never calls `Task.Delay`, never loops.

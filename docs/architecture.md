@@ -391,7 +391,7 @@ One test project, `tests/PriceLookup.Tests`, whose folders mirror the layers, pl
 | Architecture | `LayeringTests`: the layer rules above | none (`NetArchTest.Rules`) |
 | Domain unit | `SkuTests`, `CurrencyCodeTests`, `PriceTests` | none |
 | Application unit | `GetProductPriceHandlerTests`: found, not found, invalid SKU, each failure kind, cancellation | `ScriptedErpClient` |
-| Application unit | `AttemptTimeoutErpClientTests`, `RetryingErpClientTests`, `TimeoutErpClientTests`, the full chain, `ErpResilienceOptionsTests` | `ScriptedErpClient` (can return a price, fail N times, or hang) |
+| Application unit | `AttemptTimeoutErpClientTests`, `RetryingErpClientTests`, `TimeoutErpClientTests`, the full chain (`ErpResilienceChainTests`), `ErpResilienceOptionsTests` | `ScriptedErpClient` (can return a price, fail N times, or hang) |
 | Infrastructure unit | `SapErpClientTests`, `SapResponseClassifierTests`, `SapRequestFactoryTests`, `ODataDateParserTests`, `SapHttpHandlerFactoryTests` | `StubHttpMessageHandler` |
 | Infrastructure unit | `ClientCertificateLoaderTests`, `SapOptionsValidatorTests` | a self-signed certificate created in the test |
 | Endpoint | `PriceEndpointTests`, `HealthAndErrorsTests`: status codes, JSON body, `ProblemDetails` with `code` and `traceId` | `WebApplicationFactory<Program>` with `ScriptedErpClient` |

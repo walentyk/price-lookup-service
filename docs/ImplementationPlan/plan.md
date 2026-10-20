@@ -236,7 +236,7 @@ Rules that follow from it:
     ├── PriceLookup.Tests/
     │   ├── Architecture/LayeringTests.cs
     │   ├── Domain/                              SkuTests, CurrencyCodeTests, PriceTests
-    │   ├── Application/                         GetProductPriceHandlerTests, AttemptTimeoutErpClientTests, RetryingErpClientTests, TimeoutErpClientTests, ErpResilienceOptionsTests
+    │   ├── Application/                         GetProductPriceHandlerTests, AttemptTimeoutErpClientTests, RetryingErpClientTests, TimeoutErpClientTests, ErpResilienceChainTests, ErpResilienceOptionsTests
     │   ├── Infrastructure/Sap/                  SapErpClientTests, SapResponseClassifierTests, SapRequestFactoryTests,
     │   │                                        ODataDateParserTests, SapOptionsValidatorTests, ClientCertificateLoaderTests, SapHttpHandlerFactoryTests
     │   ├── Endpoints/PriceEndpointTests.cs
