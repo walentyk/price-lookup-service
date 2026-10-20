@@ -20,7 +20,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | 8 | SAP stub app with magic SKUs and end-to-end tests | 60 min | DONE | 77b2a22 |
 | 9 | X.509 certificate, TLS, options validation, Key Vault | 60 min | DONE | 11575a4 |
 | 10 | `docs/frontend-bff.md` (Next.js, written only) | 45 min | DONE | bad6e55 |
-| 11 | README and docs alignment | 30 min | TODO | |
+| 11 | README and docs alignment | 30 min | DONE | 61bbc17 |
 | 12 | Optional: CI (GitHub Actions build and test) | 20 min | TODO | |
 | 13 | Optional: Azure deployment notes | 45 min | TODO | |
 | 14 | Pull request to `main` | 10 min | TODO | |
