@@ -10,7 +10,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | Step | Title | Estimate | Status | Commit |
 |---|---|---|---|---|
 | 0 | Planning docs and AGENTS.md (author commits manually) | - | AUTHOR | |
-| 1 | Architecture document with Mermaid diagrams | 40 min | TODO | |
+| 1 | Architecture document with Mermaid diagrams | 40 min | DONE | d27c4f8 |
 | 2 | Solution skeleton, health, ProblemDetails baseline | 40 min | TODO | |
 | 3 | Domain: `Sku`, `CurrencyCode`, `Price`, `ProductPrice` | 30 min | TODO | |
 | 4 | Application: ERP port, use case, results, layering test | 45 min | TODO | |
