@@ -44,7 +44,7 @@ flowchart TB
 
     subgraph core["PriceLookup.Core"]
         di["DependencyInjection<br/>AddCore(configuration)"]
-        infra["Infrastructure / Sap<br/>SapErpClient, SapRequestFactory, SapResponseClassifier,<br/>SapPriceMapper, ODataDateParser, SapHttpHandlerFactory,<br/>SapOptions, SapOptionsValidator, ClientCertificateLoader"]
+        infra["Infrastructure / Sap<br/>SapErpClient, SapRequestFactory, SapResponseClassifier,<br/>SapPriceMapper, ODataDateParser, SapHttpHandlerFactory,<br/>SapOptions, SapOptionsValidator,<br/>ClientCertificateLoader, SapClientCertificate"]
         app["Application<br/>Ports: IErpClient, ErpException, ErpFailureKind<br/>GetProductPrice: GetProductPriceHandler, PriceLookupResult,<br/>PriceLookupError, ErpFailureMapper<br/>Resilience: TimeoutErpClient, RetryingErpClient,<br/>AttemptTimeoutErpClient, ErpResilienceOptions"]
         domain["Domain<br/>Sku, CurrencyCode, Price, ProductPrice"]
     end
@@ -338,10 +338,10 @@ Accept: application/json
 
 **One call:** `SapErpClient` builds the request, sends it once, classifies the response and maps the body. It never retries, sets no timeout of its own and never logs credentials.
 
-**TLS and certificate** (`SapHttpHandlerFactory`, `ClientCertificateLoader`, `SapOptionsValidator`; A6 to A8, A23, A24):
+**TLS and certificate** (`SapHttpHandlerFactory`, `ClientCertificateLoader`, `SapClientCertificate`, `SapOptionsValidator`; A6 to A8, A23, A24):
 
 - The primary handler is a `SocketsHttpHandler` with `SslOptions.EnabledSslProtocols` = `Tls12 | Tls13`; older protocols are disabled.
-- The client certificate comes from `Sap:ClientCertificateBase64` (a base64 PFX, optional `Sap:ClientCertificatePassword`). It is loaded once at startup with `X509CertificateLoader.LoadPkcs12`, must have a private key, and is added to `SslOptions.ClientCertificates`. Rotation = a new Key Vault secret version and a restart.
+- The client certificate comes from `Sap:ClientCertificateBase64` (a base64 PFX, optional `Sap:ClientCertificatePassword`). `ClientCertificateLoader` reads it with `X509CertificateLoader.LoadPkcs12` and requires a private key. `SapOptionsValidator` loads it at startup (`ValidateOnStart`) to prove it is usable; the singleton `SapClientCertificate` holds the instance the handlers use, loaded once per process, so handler rotation by the `HttpClient` factory never reloads it. It is added to `SslOptions.ClientCertificates`. Rotation = a new Key Vault secret version and a restart.
 - The SAP server certificate is validated with the platform's default rules; there is no option to skip that check and no custom validation callback (A41).
 - Outside `Development` the service refuses to start unless `Sap:BaseUrl` is `https` and the certificate loads. Error messages and logs never contain the certificate, the password or the private key.
 

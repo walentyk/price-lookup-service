@@ -1,5 +1,4 @@
 using System.Security.Authentication;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using PriceLookup.Core.Infrastructure.Sap;
 
@@ -26,7 +25,7 @@ public sealed class SapHttpHandlerFactoryTests
     [Fact]
     public void Client_certificate_passed_in_is_attached()
     {
-        using var certificate = CreateSelfSignedCertificate();
+        using var certificate = TestCertificates.CreateSelfSigned();
 
         using var handler = SapHttpHandlerFactory.Create(certificate);
 
@@ -41,12 +40,5 @@ public sealed class SapHttpHandlerFactoryTests
 
         Assert.NotNull(handler.SslOptions.ClientCertificates);
         Assert.Empty(handler.SslOptions.ClientCertificates);
-    }
-
-    private static X509Certificate2 CreateSelfSignedCertificate()
-    {
-        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
-        var request = new CertificateRequest("CN=price-lookup-test", key, HashAlgorithmName.SHA256);
-        return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(10));
     }
 }

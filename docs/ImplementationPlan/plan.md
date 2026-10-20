@@ -213,7 +213,8 @@ Rules that follow from it:
 │   │   │       │   ├── ODataDateParser.cs
 │   │   │       │   └── SapPriceMapper.cs        DTO to ProductPrice
 │   │   │       └── Security/
-│   │   │           └── ClientCertificateLoader.cs   (step 9)
+│   │   │           ├── ClientCertificateLoader.cs   (step 9)
+│   │   │           └── SapClientCertificate.cs      (step 9) singleton, the certificate loaded once per process
 │   │   └── DependencyInjection/
 │   │       └── CoreServiceCollectionExtensions.cs   AddCore(configuration)
 │   └── PriceLookup.Api/
@@ -238,14 +239,18 @@ Rules that follow from it:
     │   ├── Domain/                              SkuTests, CurrencyCodeTests, PriceTests
     │   ├── Application/                         GetProductPriceHandlerTests, AttemptTimeoutErpClientTests, RetryingErpClientTests, TimeoutErpClientTests, ErpResilienceChainTests, ErpResilienceOptionsTests
     │   ├── Infrastructure/Sap/                  SapErpClientTests, SapResponseClassifierTests, SapRequestFactoryTests,
-    │   │                                        ODataDateParserTests, SapOptionsValidatorTests, ClientCertificateLoaderTests, SapHttpHandlerFactoryTests
+    │   │                                        ODataDateParserTests, SapOptionsValidatorTests, ClientCertificateLoaderTests, SapHttpHandlerFactoryTests,
+    │   │                                        TestCertificates (self-signed certificates created in memory)
+    │   ├── Configuration/KeyVaultConfigurationExtensionsTests.cs
     │   ├── Endpoints/PriceEndpointTests.cs
     │   ├── EndToEnd/StubScenarioTests.cs
     │   ├── EndToEnd/SapStubFixture.cs           the stub on a free loopback port, one per test class
     │   ├── Fakes/ScriptedErpClient.cs
     │   ├── Fakes/StubHttpMessageHandler.cs
+    │   ├── Fakes/FakeHostEnvironment.cs
     │   ├── Infrastructure/ApiFactory.cs
-    │   └── HealthAndErrorsTests.cs
+    │   ├── HealthAndErrorsTests.cs
+    │   └── StartupValidationTests.cs            the whole host outside Development (step 9)
     └── PriceLookup.SapStub/
         ├── Program.cs                           wiring only
         ├── SapStubHost.cs                       builds the app (usable from tests)
