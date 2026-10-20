@@ -528,8 +528,14 @@ dotnet build PriceLookup.slnx
 dotnet test PriceLookup.slnx
 dotnet run --project src/PriceLookup.Api          # background task, Development, no stub running
 curl -s -i http://localhost:5080/products/ABC-123/price
-# expected: 502, code erp_unavailable after about 0.6 s (connection refused, 4 attempts);
-# the log shows 4 attempts (3 Warning lines for the retries)
+# expected on Windows: 504, code erp_timeout after about 7 s. A refused connection to localhost
+# takes about 2 s per address (::1, then 127.0.0.1), so each attempt hits the 3 s attempt timeout;
+# attempts 1 and 2 fail with AttemptTimeout, attempt 3 is cut by the total timeout.
+# The log shows 2 Warning lines from RetryingErpClient (one per failed attempt)
+# plus 1 Warning from GetProductPriceHandler with the final result (Timeout, ErpTimeout).
+# expected on Linux, or with an unresolvable host: 502, code erp_unavailable after about 0.6 s
+# (4 attempts). The log shows 4 Warning lines from RetryingErpClient (one per failed attempt)
+# plus 1 Warning from GetProductPriceHandler with the final result (Transient, ErpUnavailable).
 taskkill //F //IM PriceLookup.Api.exe
 ```
 

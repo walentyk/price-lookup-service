@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PriceLookup.Core.Application.GetProductPrice;
 using PriceLookup.Core.Application.Resilience;
+using PriceLookup.Core.Infrastructure.Sap;
 
 namespace PriceLookup.Core.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class CoreServiceCollectionExtensions
     public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
         AddErpResilienceOptions(services, configuration);
+        services.AddSapErpClient(configuration);
         services.AddScoped<GetProductPriceHandler>();
         return services;
     }
