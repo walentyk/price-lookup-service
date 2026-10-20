@@ -12,7 +12,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | 0 | Planning docs and AGENTS.md (author commits manually) | - | DONE | e827a2e |
 | 1 | Architecture document with Mermaid diagrams | 40 min | DONE | d27c4f8 |
 | 2 | Solution skeleton, health, ProblemDetails baseline | 40 min | DONE | 62bde31 |
-| 3 | Domain: `Sku`, `CurrencyCode`, `Price`, `ProductPrice` | 30 min | TODO | |
+| 3 | Domain: `Sku`, `CurrencyCode`, `Price`, `ProductPrice` | 30 min | DONE | 2200148 |
 | 4 | Application: ERP port, use case, results, layering test | 45 min | TODO | |
 | 5 | Price endpoint with ProblemDetails mapping | 50 min | TODO | |
 | 6 | Resilience: attempt timeout, N retries and the total timeout | 75 min | TODO | |
