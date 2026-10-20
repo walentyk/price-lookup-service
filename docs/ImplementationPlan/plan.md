@@ -14,7 +14,7 @@ The decisions below are final for this plan. Agents implement them; they do not 
 | 2 | Solution skeleton, health, ProblemDetails baseline | 40 min | DONE | 62bde31 |
 | 3 | Domain: `Sku`, `CurrencyCode`, `Price`, `ProductPrice` | 30 min | DONE | 2200148 |
 | 4 | Application: ERP port, use case, results, layering test | 45 min | DONE | 926e63a |
-| 5 | Price endpoint with ProblemDetails mapping | 50 min | TODO | |
+| 5 | Price endpoint with ProblemDetails mapping | 50 min | DONE | d54ab63 |
 | 6 | Resilience: attempt timeout, N retries and the total timeout | 75 min | TODO | |
 | 7 | SAP adapter: OData V2 client behind the port | 75 min | TODO | |
 | 8 | SAP stub app with magic SKUs and end-to-end tests | 60 min | TODO | |
