@@ -2,11 +2,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using PriceLookup.Core.Application.Ports;
+using PriceLookup.Tests.Fakes;
 
 namespace PriceLookup.Tests.Infrastructure;
 
-public sealed class ApiFactory : WebApplicationFactory<Program>
+// Without a fake of its own a test gets a fresh, empty ScriptedErpClient: every SKU is unknown.
+public sealed class ApiFactory(ScriptedErpClient? erp = null) : WebApplicationFactory<Program>
 {
+    private readonly ScriptedErpClient erp = erp ?? new ScriptedErpClient();
     private readonly Dictionary<string, string?> settings = [];
 
     public ApiFactory WithSetting(string key, string? value)
@@ -25,8 +30,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.ConfigureTestServices(ReplaceServices);
     }
 
-    // Test doubles replace production registrations here; there is nothing to replace yet.
     private void ReplaceServices(IServiceCollection services)
     {
+        services.RemoveAll<IErpClient>();
+        services.AddSingleton<IErpClient>(erp);
     }
 }

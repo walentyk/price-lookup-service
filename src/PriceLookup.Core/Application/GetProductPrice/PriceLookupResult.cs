@@ -16,6 +16,7 @@ public sealed record PriceLookupResult
     public PriceLookupError? Error { get; }
 
     [MemberNotNullWhen(true, nameof(Price))]
+    [MemberNotNullWhen(false, nameof(Error))]
     public bool IsSuccess => Price is not null;
 
     public static PriceLookupResult Found(ProductPrice price) => new(price, null);
