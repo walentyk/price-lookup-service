@@ -6,6 +6,8 @@ Every error is an RFC 9457 `ProblemDetails` with a machine-readable `code`.
 SAP calls get a per-attempt timeout, 3 retries with a constant pause and a total timeout.
 SAP is simulated by `PriceLookup.SapStub`, a small separate app whose behaviour is selected by "magic" SKUs. The frontend and the BFF are described in a document, not built.
 
+Please check the [cover note](docs/CoverNote/covernote.docx) to understand why it was done this way.
+
 ## Contents
 
 - [Prerequisites](#prerequisites)
@@ -54,6 +56,8 @@ curl -s -i http://localhost:5080/health
 curl -s -i http://localhost:5080/products/ABC-123/price
 ```
 
+$\color{orange}{\textsf{Alternative option:}}$ requests are in [PriceLookup.Api.http](src/PriceLookup.Api/PriceLookup.Api.http) for the VS Code REST Client or Visual Studio.
+
 Try every magic SKU in one go:
 
 ```bash
@@ -81,7 +85,6 @@ Expected results with the default settings (the stub's behaviour is defined in [
 | `SLOW-1` | always waits 10 s | `504 erp_timeout` after about 7 s (the total timeout) |
 
 `FLAKY-1` and `HANG-1` depend on the stub's per-SKU call counter, so the timings above hold for a freshly started stub; repeated calls go through the cycle again.
-The same requests are in [PriceLookup.Api.http](src/PriceLookup.Api/PriceLookup.Api.http) for the VS Code REST Client or Visual Studio.
 
 The API log shows one Warning per failed SAP attempt (`RetryingErpClient`) and one line per lookup result (`GetProductPriceHandler`). The stub logs every call with the SKU, the call number and the status it returned.
 
@@ -98,7 +101,7 @@ taskkill //F //IM PriceLookup.SapStub.exe
 dotnet test PriceLookup.slnx
 ```
 
-About 195 tests run in a few seconds. They use xUnit v3 on Microsoft.Testing.Platform (set in `global.json`), plain `Assert` and hand-written fakes, no mocking library. No test leaves the machine: the end-to-end tests host the stub in-process on a free loopback port.
+204 tests run in a few seconds. They use xUnit v3 on Microsoft.Testing.Platform (set in `global.json`), plain `Assert` and hand-written fakes, no mocking library. No test leaves the machine: the end-to-end tests host the stub in-process on a free loopback port.
 
 | Level | What | Double |
 |---|---|---|
@@ -227,8 +230,6 @@ tests/PriceLookup.SapStub/     the SAP stub app (never deployed)
 - Bulk lookups and currency conversion.
 - Automated certificate rotation.
 - The real SAP contract (service, entity set, fields, which price, `sap-client`) agreed with the SAP team, and timeout values from the SAP SLA.
-- Frontend code: the frontend and the BFF are described in [docs/frontend-bff.md](docs/frontend-bff.md), not built.
-- CI is optional step 12 of the [plan](docs/ImplementationPlan/plan.md). The Azure deployment is described in [docs/deployment.md](docs/deployment.md) but not automated.
 
 ## Documents
 
